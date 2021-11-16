@@ -1,0 +1,177 @@
+/****** OPERADORES LOGICOS ******/
+$gt = mayor que ">"
+$gte = mayor igual ">="
+$lt = menor que "<"
+$lte = menor igual "<=" 
+$ne = Diferente que, Not equal "!="
+$and = recibe un Array de objetos[Object, Object] a consultar "&&"
+$or = recibe un Array de objetos[Object, Object] a consultar "||"
+$in = Permite buscar en un listado {property: {$in: [value1, value2, ...]}} 
+- $exists = Si el DOCUMENTO tiene tal ATRIBUTO O PROPIEDAD y recibe un 
+"TRUE" para los que tienen o "FALSE" para los que no.
+/****** ||| ******/
+
+
+Retornas CURSOR o DOCUMENTOS
+
+los Elementos de Tipo CURSOR tienen un metodo COUNT
+
+CTRL + L //Limpiar la consola
+
+//Para ver que Base de datos (collection, document) estamos utilizando
+db;
+
+//Para ver las bases de datos
+show Databases:
+
+//Para seleccionar la base de datos
+use name_database;
+
+//Para ver las colecciones de la base de datos
+show collections;
+
+//Para crear una colleccion si no existe e insertar datos
+db.name_collection.insert(object);
+
+//********** Para LISTAR TODO los datos
+db.name_collection.find();
+
+//********** Para CONSULTAR un dato
+// Para buscar
+db.name_collection.find({property: "value"}); //Retorna un CURSOR
+// Para buscar UNO
+db.name_collection.findOne({property: "value"}); //Retorna un DOCUMENTO
+
+//Los id(ObjectId) se crear de forma aleatoria y se dividen en 4 secciones
+(Timestamp - Identificador para el servidor - PID - Autoincrement)
+"_id" : ObjectId("6191f4aab3575337e999815b")
+
+//********* Para INSERTAR un Objeto
+db.name_collection.insertOne(object);
+- Retorna el _id: {"acknowledged" : true,"insertedId" : ObjectId("XXX")}
+
+//********** Para INSERTAR un Objecto
+//Si NO existe el objeto se CREAR
+//Si existe el objeto se ACTUALIZA 
+db.name_collection.save(object);
+- Retorna la catidad: WriteResult({ "nInserted" : 1 })
+
+//Para INSERTAR multiples Objetos **********
+db.name_collection.insertMany([object, object, ...n]);
+- Retorna los _ids: {"acknowledged" : true,"insertedId" : [ObjectId("XXX"), ObjectId("XXX")]}
+
+//************************ EJERCICIOS && EJEMPLOS ************************
+Ejemplo con una coleccion o documento llamado "products"
+
+// ********** INSERTAR ************
+product12 = {
+    "nombre":"Atun",
+    "marca":"Bancan",
+    "Precio": 1.55
+}
+
+//Forma 1
+db.products.insert(product3);
+//Forma 2
+db.products.insertOne({
+    "nombre":"Fideo para pastas",
+    "marca":"Don Vitorio",
+    "Precio": 1.65
+});
+//Forma 3
+db.products.insertMany([
+    {
+    "nombre":"Cola 1Lt",
+    "marca":"Coca cola",
+    "Precio": 1.25,
+    "inStock": false
+    },{
+    "nombre":"Cifruts 1Lt",
+    "marca":"Cifruts",
+    "Precio": 1.50,
+    "inStock": false
+    }
+]);
+//Forma 4
+db.products.save(product11);
+
+// ********** CONSULTAR ************
+// Obtener el producto con nombre "XXX"
+db.products.find({
+    nombre: "Pasta"
+});
+
+db.products.findOne({
+    nombre: "Pasta"
+});
+
+// Obtener todos los productos con un precio mayor a $1.00
+db.products.find({
+    Precio: {$gt: 1.25}
+});
+
+// Obtener la cantida de los productos con un precio menor a $1.00
+db.products.find({
+    Precio: {$lt: 1.25}
+}).count();
+
+// Obtener todos los productos con un precio mayor a $1.00 con un stock en TRUE
+db.products.find({
+    $and: [
+        {Precio: {$gt: 1.00}},
+        {inStock: true}    
+    ]
+});
+
+// Obtener todos los productos cuyo precio no sea $1.00
+db.products.find({
+    Precio: {$ne: 1.25}
+});
+
+// Obtener todos los productos cuyo precio tenga por valor $0.50 o $1.00 o $1.10
+*** Opcion 1: para limitada cantidad de datos
+db.products.find({
+    $or: [
+        {Precio: 0.50},
+        {Precio: 1.00},
+        {Precio: 1.10},  
+    ]
+});
+
+*** Opcion 2: para una mayor cantidad de datos
+db.products.find({
+    Precio: {$in: [0.50, 1.00, 1.10]}
+});
+
+// Obtener todos los productos con atributo inStock
+db.products.find({
+    inStock: {$exists: true}
+});
+
+// Obtener todos los productos con STOCK true
+// Opcion 1
+db.products.find({
+    inStock: true
+});
+
+// Opcion 2: LA MAS RECOMENDABLE
+db.products.find({
+    $and:[
+    {inStock: {$exists: true}},
+    {inStock: true}
+    ]
+});
+
+// Obtener todos los productos con STOCK true y marca
+db.products.find({
+    $and:[
+    {inStock: {$exists: true}},
+    {inStock: false},
+    {marca: {$exists: true}}
+    ]
+});
+
+// Obtener el producto con mayor precio
+// Obtener a los 3 productos de menor precio
+
+
