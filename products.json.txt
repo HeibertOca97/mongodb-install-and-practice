@@ -1,0 +1,179 @@
+/*******************
+        USERS
+******************/
+
+db.users.insertMany([
+    {
+        nombres: "user1", 
+        email:"user1@gmail.com"
+    },
+    {   
+        nombres: "user2", 
+        email:"user2@gmail.com"
+    },
+    {   
+        nombres: "user3", 
+        email:"user3@gmail.com"
+    },
+    {
+        nombres: "user4", 
+        email:"user4@gmail.com"
+    },
+]);
+
+/*******************
+        VENDORS
+******************/
+
+db.vendors.insertMany([
+    {
+        nombres: "Mark", 
+        company:"Unity Shop", 
+        direccion: {
+                        pais: "EEUU", 
+                        locacion: {
+                                    lat: 109, 
+                                    long: 507
+                        }
+        },
+        cedes: [
+                {
+                    america: ["EEUU"] 
+                },
+                {
+                    europa: ["FRA", "GDR"]
+                }
+        ]
+    },
+    {
+        nombres: "Gate", 
+        company:"Global shop", 
+        direccion: {
+                        pais: "EEUU", 
+                        locacion: {
+                                    lat: 303, 
+                                    long: 1089
+                        }
+        },
+        cedes: [
+                {
+                    america: ["EEUU"] 
+                }
+        ]
+    },
+    {
+        nombres: "George", 
+        company:"Covolt Shop",    
+        direccion: {
+                        pais: "GBR", 
+                        locacion: {
+                                    lat: 7509, 
+                                    long: 50227
+                        }
+        },
+        cedes: [
+                {
+                    america: ["EEUU"] 
+                },
+                {
+                    europa: ["GBR", "GDR"]
+                }
+        ]
+    },
+    {
+        nombres: "Harry", 
+        company:"Magnut Shop", 
+        direccion: {
+                        pais: "GBR", 
+                        locacion: {
+                                    lat: 402, 
+                                    long: 9807
+                        }
+        },
+        cedes: [
+                {
+                    america: ["EEUU"] 
+                },
+                {
+                    europa: ["GER", "FRA"]
+                }
+        ]
+    },
+]);
+
+
+/*******************
+        PRODUCTS
+******************/
+
+
+db.products.insertMany([
+    { 
+        nombre: "Azucar 1Lt", 
+        marca: "La Morenita", 
+        precio: 1, 
+        inStock: true, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Sal 1Lt",
+        marca: "Mars", 
+        precio: 1, 
+        inStock: true, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Javon", 
+        marca: "Rexona", 
+        precio: 1, 
+        inStock: true, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Desodorante", 
+        marca: "Rexana", 
+        precio: 2, 
+        inStock: true, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Fideos", 
+        marca: "Don Vitorio", 
+        precio: 1.2, 
+        inStock: false, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    {   
+        nombre: "Atun", 
+        marca: "Bancan", 
+        precio: 1.65, 
+        inStock: false, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Lecho de fresa", 
+        marca: "Tony", 
+        precio: 0.8, 
+        inStock: false, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+    { 
+        nombre: "Jugo de durazno", 
+        marca: "Pulg", 
+        precio: 0.25, 
+        inStock: false, 
+        cantidad: 20, 
+        vendor: "" 
+    },
+]);
+
+
+
+

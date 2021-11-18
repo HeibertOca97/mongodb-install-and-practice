@@ -6,23 +6,45 @@ $lte = menor igual "<="
 $ne = Diferente que, Not equal "!="
 $and = recibe un Array de objetos[Object, Object] a consultar "&&"
 $or = recibe un Array de objetos[Object, Object] a consultar "||"
-$in = Permite buscar en un listado {property: {$in: [value1, value2, ...]}} 
-- $exists = Si el DOCUMENTO tiene tal ATRIBUTO O PROPIEDAD y recibe un 
 "TRUE" para los que tienen o "FALSE" para los que no.
 /****** ||| ******/
-
-
+$in = Permite buscar en un listado {property: {$in: [value1, value2, ...]}} 
+- $exists = Si el DOCUMENTO tiene tal ATRIBUTO O PROPIEDAD y recibe un 
+- $set = Para actualizar(agrega los inexistentes) atributos.
+- $unset = Para quitar atributos.
+- $inc = Para incrementar el valor de atributos.
+- $elemMatch = Nos permite filtrar sobre attrs de documentos dentro de listas
+- $push = Permite anadir un nuevo elemento a una lista.
 Retornas CURSOR o DOCUMENTOS
 
-los Elementos de Tipo CURSOR tienen un metodo COUNT
+los Elementos de Tipo CURSOR tienen un metodo COUNT, SORT, LIMIT, SKIT, PRETTY
+find().count();
+find().sort({property: 1=ASC o -1=DESC});
+find().limit(..n); || find().sort(Object).limit(..n);
+find().skip(..n);
+find().pretty();
 
-CTRL + L //Limpiar la consola
+
+// Para hacer un backup de la base de datos
+mongodump --db name_database 
+
+// Para restaurar la base de datos desde un backup
+mongorestore --bd name_database dirname_database_backup/
+
+// Para entrar a la consola
+mongo
+
+// Para limpiar la consola
+CTRL + L
+
+//Para ver las bases de datos
+show Databases:
 
 //Para ver que Base de datos (collection, document) estamos utilizando
 db;
 
-//Para ver las bases de datos
-show Databases:
+//Para eliminar Base de datos
+db.dropDatabase();
 
 //Para seleccionar la base de datos
 use name_database;
@@ -30,13 +52,31 @@ use name_database;
 //Para ver las colecciones de la base de datos
 show collections;
 
+//Para eliminar colecciones
+db.name_collection.drop();
+
 //Para crear una colleccion si no existe e insertar datos
 db.name_collection.insert(object);
 
-//********** Para LISTAR TODO los datos
-db.name_collection.find();
+//********** Para LISTAR TODO los documentos
+db.name_collection.find(); retorna un CURSOR
 
-//********** Para CONSULTAR un dato
+- Puede recibir 2 parametros:
+Ej 1: Sintaxis 
+db.name_collection.find(
+{}, // Definicion de condicion
+{}  // Definir los parametros a obtener 
+);
+Ej 2: Definir los parametros a obtener 
+db.name_collection.find(
+{}, // Definicion de condicion
+{
+    _id: true // Por defecto
+    param1: // true("visible") o false("oculto"), 
+}
+);
+
+//********** Para CONSULTAR un documento
 // Para buscar
 db.name_collection.find({property: "value"}); //Retorna un CURSOR
 // Para buscar UNO
@@ -46,11 +86,11 @@ db.name_collection.findOne({property: "value"}); //Retorna un DOCUMENTO
 (Timestamp - Identificador para el servidor - PID - Autoincrement)
 "_id" : ObjectId("6191f4aab3575337e999815b")
 
-//********* Para INSERTAR un Objeto
+//********* Para INSERTAR documentos
 db.name_collection.insertOne(object);
 - Retorna el _id: {"acknowledged" : true,"insertedId" : ObjectId("XXX")}
 
-//********** Para INSERTAR un Objecto
+//********** Para INSERTAR documentos
 //Si NO existe el objeto se CREAR
 //Si existe el objeto se ACTUALIZA 
 db.name_collection.save(object);
@@ -60,7 +100,48 @@ db.name_collection.save(object);
 db.name_collection.insertMany([object, object, ...n]);
 - Retorna los _ids: {"acknowledged" : true,"insertedId" : [ObjectId("XXX"), ObjectId("XXX")]}
 
-//************************ EJERCICIOS && EJEMPLOS ************************
+//********** Para ACTULIZAR documentos
+Existen 3 formas:
+1. Usando metodo save() "Inserta y actualiza"
+
+var VarName = db.name_collection.findOne(ObjectConsult); //Guardamos la consulta
+VarName.attr1 = "value1"; //Sobreescribimos los valores de
+VarName.attr2 = value2; // los atributos a actualizar
+db.name_collection.save(VarName); // Pasamos la consulta almacenada al metodo save()
+
+2. Actualizar el documento atravez de una sentencia
+
+//Forma 1:
+db.name_collection.update(
+{}, // Condicion
+{ $set:{} }
+);
+
+//Forma 2:
+db.name_collection.update(
+{}, // Condicion
+{ $set:{} },
+{multi: true}
+);
+
+//Forma 3:
+db.name_collection.updateOne(
+{}, // Condicion
+{ $set:{} }
+);
+
+//Forma 4:
+db.name_collection.updateMany(
+{}, // Condicion
+{ $set:{} }
+);
+
+//********** Para ELIMINAR documentos
+
+
+/***************************** 
+    EJERCICIOS && EJEMPLOS 
+*******************************/
 Ejemplo con una coleccion o documento llamado "products"
 
 // ********** INSERTAR ************
@@ -81,14 +162,14 @@ db.products.insertOne({
 //Forma 3
 db.products.insertMany([
     {
-    "nombre":"Cola 1Lt",
-    "marca":"Coca cola",
-    "Precio": 1.25,
+    "nombre":"Lecho de fresa",
+    "marca":"Tony",
+    "Precio": 0.80,
     "inStock": false
     },{
-    "nombre":"Cifruts 1Lt",
-    "marca":"Cifruts",
-    "Precio": 1.50,
+    "nombre":"Jugo de durazno",
+    "marca":"Pulg",
+    "Precio": 0.25,
     "inStock": false
     }
 ]);
@@ -172,6 +253,212 @@ db.products.find({
 });
 
 // Obtener el producto con mayor precio
+db.products.find().sort({Precio: -1});
+db.products.find().sort({Precio: -1}).limit(1);
+
 // Obtener a los 3 productos de menor precio
+db.products.find().sort({Precio: 1}).limit(3);
+
+// Obtener productos mediante expresiones regulares
+db.products.find({ nombre:/Lt$/i }); // Busca aquello que tenga "Lt"
+
+// Obtener la cantidad de productos si tiene una propiedad inStock "true" o "False" con un precio mayor o menor que $1;
+db.products.find({
+    $and:[
+        {inStock: {$exists: true}}, 
+        {inStock: true}, 
+        {Precio: {$lt: 1}} 
+    ]
+}).count();
+
+// Obtener los productos empezando desde la (5ta, 10ma) posicion 
+db.products.find().skip(5); || db.products.find().skip(10);
+
+// Obtener los productos en un formato JSON
+db.products.find().pretty();
+
+// Obtener los productos con un precio menor de $1 con los atributos nombre y precio
+
+db.products.find({
+    Precio: {$lt: 1}
+},{
+    nombre: true,
+    Precio: true
+});
+
+
+// ACTUALIZAR los atributos de un DOCUMENTO
+
+//Forma 1: Con metodo save()
+var p1 = db.products.findOne({nombre: "Azucar 1Lt"});
+p1.isStock = false;
+db.products.save(p1);
+
+//Forma 2: en una sentencia
+db.products.update(
+{
+    _id : ObjectId("6191f79ab3575337e999815d")
+},{ 
+    $set:{
+        inStock: true
+    } 
+});
+
+db.products.update(
+{
+    inStock: false
+},{ 
+    $set:{
+        inStock: true,
+        cantidad: 12
+    } 
+},{
+    multi: true
+});
+
+//Forma 3: UpdateOne
+db.products.updateOne(
+{
+    nombre: "Pasta"
+},
+{
+    $set: {
+        inStock: true
+    }
+}
+);
+
+
+//Forma 4: UpdateMany
+db.products.updateMany(
+{
+    inStock: { $exists: false }
+},
+{
+    $set: {
+        inStock: true
+    }
+}
+);
+
+// Aumentar la cantidad en 1 de todos los productos
+db.products.updateMany(
+{},
+{
+    $inc: {
+        cantidad: 1
+    }
+}
+);
+
+
+// ELIMINAR documentos
+*** Eliminar todos
+db.products.remove({});
+
+*** Eliminar consultados
+db.products.remove({
+    inStock: false
+});
+
+
+// OBTENER DOCUMENTOS ANIDADOS Y LISTADOS
+
+//Consultas de documentos anidados(envevidos)
+db.vendors.find({
+    "direccion.pais": "GBR" //dot notation
+});
+
+db.vendors.find({
+    "direccion.locacion.lat": {$lt: 350}
+},{
+    nombres:true,
+    "direccion.pais": true
+});
+
+db.vendors.find({
+    cedes: {$exists: true}
+},{
+    nombres:true,
+    "direccion.pais": true,
+    cedes: true
+});
+
+//Consultas de documentos que se encuentran en una lista []
+db.vendors.find({
+    cedes: {
+        $elemMatch:{
+            america: {$exists: true}
+        }
+    }
+},{
+    nombres:true,
+    "direccion.pais": true,
+    "cedes.america": true
+});
+
+db.vendors.find({
+    cedes: {
+        $elemMatch:{
+            $and:[
+                {europa: {$exists: true}},
+            ]
+        }
+    }
+},{
+    cedes: true
+});
+
+// Anadir un nuevo documento a una lista
+db.vendors.updateOne(
+    {
+        nombres: "Mark"    
+    }, 
+    {
+        $push: {
+            cedes:{
+                sudamerica: ["ECU", "COL", "BRA"]            
+            }
+        }
+    }
+);
+
+// Anadir un nuevo elemento que no es un documento a una lista
+[atributo.posicion.atributo] || [atributo.$.atributo]
+$ = El simbolo del dolar hace refencia a toda las posiciones dependiendo de la condicion.
+
+db.vendors.updateOne(
+    {
+        nombres: "Mark"    
+    }, 
+    {
+        $push: {
+            "cedes.0.america": "MX" //[atributo.posicion.atributo]
+
+        }
+    }
+);
+// Actualizar ese valor de la lista(Array)
+db.vendors.updateOne(
+    {
+        nombres: "Mark"    
+    }, 
+    {
+        $set: {
+            "cedes.0.america.1": "MX"
+
+        },
+        $unset: {
+            "cedes.1": true
+
+        }
+    }
+);
+
+
+
+
+
+
 
 
